@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import authService from '../services/authService.js';
-import googleAuthService from '../services/googleAuthService.js';
+import wixOAuthService from '../services/wixOAuthService.js';
 
 const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
   const [formData, setFormData] = useState({
@@ -11,8 +11,8 @@ const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Initialize Google OAuth when component mounts
-    googleAuthService.initGoogleAuth();
+    // Initialize OAuth service when component mounts
+    // The enhanced OAuth service handles initialization automatically
   }, []);
 
   const handleChange = (e) => {
@@ -35,6 +35,22 @@ const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
     } catch (error) {
       setError(error.message);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError('');
+
+    try {
+      // Get the OAuth authorization URL
+      const authUrl = await wixOAuthService.getAuthUrl();
+      
+      // Redirect to Google OAuth
+      window.location.href = authUrl;
+    } catch (error) {
+      setError('Google sign-in failed. Please try again.');
       setLoading(false);
     }
   };
@@ -101,7 +117,13 @@ const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
       </div>
 
       <div className="google-auth-section">
-        <div id="google-signin-button"></div>
+        <button
+          onClick={handleGoogleSignIn}
+          className="btn google-btn"
+          disabled={loading}
+        >
+          {loading ? 'Signing In...' : 'Sign in with Google'}
+        </button>
       </div>
 
       <div className="auth-switch">
