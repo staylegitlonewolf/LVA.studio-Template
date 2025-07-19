@@ -291,4 +291,42 @@ body {
   background: linear-gradient(135deg, #24faff, #00e5ff);
   box-shadow: 0 0 15px rgba(36, 250, 255, 0.4);
   transform: translateY(-1px);
+}
+
+/* Google OAuth styles */
+.divider {
+  text-align: center;
+  margin: 1.5rem 0;
+  position: relative;
+}
+
+.divider::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(36, 250, 255, 0.2);
+}
+
+.divider span {
+  background: linear-gradient(145deg, #0d1a2d, #1c2b3a);
+  padding: 0 1rem;
+  color: #66ccff;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.google-auth-section {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+}
+
+#google-signin-button {
+  width: 100%;
+  max-width: 300px;
 } 

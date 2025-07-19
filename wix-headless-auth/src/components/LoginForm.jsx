@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import authService from '../services/authService.js';
+import googleAuthService from '../services/googleAuthService.js';
 
 const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
   const [formData, setFormData] = useState({
@@ -8,6 +9,11 @@ const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    // Initialize Google OAuth when component mounts
+    googleAuthService.initGoogleAuth();
+  }, []);
 
   const handleChange = (e) => {
     setFormData({
@@ -89,6 +95,14 @@ const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
           {loading ? 'Signing In...' : 'Sign In'}
         </button>
       </form>
+
+      <div className="divider">
+        <span>OR</span>
+      </div>
+
+      <div className="google-auth-section">
+        <div id="google-signin-button"></div>
+      </div>
 
       <div className="auth-switch">
         Don't have an account?{' '}
