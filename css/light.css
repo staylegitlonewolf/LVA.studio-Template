@@ -1,0 +1,33 @@
+body.clean-mode {
+  background: #ffffff;
+  color: var(--light-desc-color);
+  font-family: 'Open Sans', sans-serif;
+  font-weight: 700;
+  border-bottom: 2px solid #444;
+}
+body.clean-mode .top-menu {
+  background: rgba(255, 255, 255, 0.95);
+  color: #111111;
+}
+body.clean-mode .flip-front,
+body.clean-mode .flip-back {
+  background: #ffffff !important;
+  border: 1px solid #ddd !important;
+}
+body.clean-mode .card-title {
+  color: var(--light-title-color);
+}
+body.clean-mode .flip-front p,
+body.clean-mode .flip-back p {
+  color: #000000;
+}
+body.clean-mode .footer-cta {
+  color: #000 !important;
+}
+body.clean-mode .hero h1,
+body.clean-mode .hero p,
+body.clean-mode h1,
+body.clean-mode p {
+  color: #000000 !important;
+  text-shadow: none !important;
+} 

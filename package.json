@@ -1,0 +1,33 @@
+{
+  "name": "lva-studio-template",
+  "version": "1.0.0",
+  "description": "A clean, modern frontend template for building professional web applications",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "npx http-server -p 8000",
+    "dev": "npx live-server --port=8000"
+  },
+  "keywords": [
+    "template",
+    "frontend",
+    "web",
+    "portal",
+    "responsive",
+    "modern"
+  ],
+  "author": "LVA.studio",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/LVA.studio-Template.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/LVA.studio-Template/issues"
+  },
+  "homepage": "https://github.com/yourusername/LVA.studio-Template#readme"
+} 

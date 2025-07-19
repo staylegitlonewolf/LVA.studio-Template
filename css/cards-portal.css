@@ -1,0 +1,12 @@
+.card-desc {
+  color: var(--text-color) !important;
+}
+#wix-root > .shop-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin: 2rem auto;
+  max-width: 900px;
+} 

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>LVA.studio™ Template Demo</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Open+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/epic.css" />
+  <link rel="stylesheet" href="css/light.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/buttons.css" />
+  <link rel="stylesheet" href="css/cards-portal.css" />
+  <link rel="stylesheet" href="css/health-insurance.css">
+</head>
+<body>
+  <video id="epic-bg-video" class="epic-bg-video" autoplay loop muted playsinline style="display:none">
+    <source src="media/background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  
+  <!-- Fixed Top Menu -->
+  <div class="top-menu">
+    <div class="menu-group">
+      <button id="side-menu-toggle" class="hamburger-btn" aria-label="Open side menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <span class="brand-text"> Template Demo </span>
+      <img
+        src="https://static.wixstatic.com/media/b2f74b_35458543ca6540f4bad3ad4cb452ffac~mv2.png/v1/fill/w_209,h_209,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/lva%20baby%20blue%203d%20no%20backgroud.png"
+        alt="LVA Logo"
+        class="menu-icon"
+        id="logo-btn"
+        style="cursor:pointer;"
+        onclick="window.location.href='index.html'"
+      />
+    </div>
+  </div>
+  
+  <!-- Side Menu and Overlay -->
+  <div id="side-menu-overlay" class="side-menu-overlay" style="display:none;"></div>
+  <nav id="side-menu" class="side-menu" style="display:none;">
+    <button id="close-side-menu" class="close-side-menu" aria-label="Close side menu">&times;</button>
+    <div class="side-menu-content">
+      <button class="toggle-mode-btn light-btn" onclick="toggleFontMode(this)" aria-label="Toggle theme">
+        <svg class="lightbulb-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <ellipse cx="16" cy="13" rx="8" ry="10" fill="#fffbe6" class="bulb-glow"/>
+            <path d="M16 3C10.477 3 6 7.477 6 13c0 3.866 2.5 6.5 4 8v2a2 2 0 002 2h4a2 2 0 002-2v-2c1.5-1.5 4-4.134 4-8 0-5.523-4.477-10-10-10z" fill="#ffe066" stroke="#bfa600" stroke-width="2"/>
+            <rect x="13" y="25" width="6" height="3" rx="1.5" fill="#bfa600"/>
+            <rect x="14" y="28" width="4" height="2" rx="1" fill="#bfa600"/>
+          </g>
+        </svg>
+      </button>
+      <button id="fullscreen-toggle" class="fullscreen-btn">Fullscreen</button>
+    </div>
+  </nav>
+  
+  <!-- Main Content Area -->
+  <div id="main-content">
+    <div style="padding: 2rem; max-width: 1200px; margin: 0 auto;">
+      <h1 style="text-align: center; margin-bottom: 2rem; color: #fff;">LVA.studio™ Template Demo</h1>
+      
+      <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 10px; margin-bottom: 2rem;">
+        <h2 style="color: #fff; margin-bottom: 1rem;">🎯 Template Features</h2>
+        <ul style="color: #fff; line-height: 1.6;">
+          <li><strong>Modern Design:</strong> Clean, professional interface with epic visual effects</li>
+          <li><strong>Responsive Layout:</strong> Fully responsive design that works on all devices</li>
+          <li><strong>Theme Toggle:</strong> Switch between light and epic themes using the side menu</li>
+          <li><strong>Service Portal:</strong> Modular service system for different business offerings</li>
+          <li><strong>Interactive Elements:</strong> Smooth animations and user interactions</li>
+          <li><strong>Video Background:</strong> Dynamic background video support</li>
+        </ul>
+      </div>
+      
+      <div style="background: rgba(255,255,255,0.1); padding: 2rem; border-radius: 10px; margin-bottom: 2rem;">
+        <h2 style="color: #fff; margin-bottom: 1rem;">🚀 Getting Started</h2>
+        <ol style="color: #fff; line-height: 1.6;">
+          <li>Open <code style="background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 3px;">index.html</code> to see the full portal</li>
+          <li>Customize the content and styling to match your brand</li>
+          <li>Add your own services and modules</li>
+          <li>Deploy to your preferred hosting platform</li>
+        </ol>
+      </div>
+      
+      <div style="text-align: center;">
+        <button onclick="window.location.href='index.html'" style="
+          background: linear-gradient(45deg, #007bff, #0056b3);
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          font-size: 18px;
+          border-radius: 25px;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-family: 'Orbitron', sans-serif;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+        " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <i class="fas fa-rocket"></i> Launch Full Portal
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <footer id="footer-line">
+    <p style="text-align: center; font-weight: bold;">LVA.studio™ Template Demo</p>
+  </footer>
+  
+  <script src="js/script.js"></script>
+  <script src="js/theme.js"></script>
+  
+  <script type="module">
+    import { toggleFontMode } from './js/theme.js';
+    window.toggleFontMode = toggleFontMode;
+    // On load, ensure epic mode is set
+    document.body.classList.remove('clean-mode');
+    document.body.classList.add('epic-mode');
+    const bgVideo = document.getElementById('epic-bg-video');
+    if (bgVideo) bgVideo.style.display = 'block';
+    // Set button state
+    const button = document.querySelector('.toggle-mode-btn');
+    if (button) {
+      button.textContent = 'THEME';
+      button.classList.remove('light-btn', 'epic-btn');
+      button.classList.add('epic-btn');
+    }
+  </script>
+</body>
+</html> 

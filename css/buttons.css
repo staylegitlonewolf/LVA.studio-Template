@@ -1,0 +1,32 @@
+#enterBtn {
+  margin-top: 2rem;
+  padding: 0.8rem 2.5rem;
+  font-size: 1.1rem;
+  color: var(--neon);
+  background: transparent;
+  border: 2px solid var(--neon);
+  border-radius: 10px;
+  text-shadow: var(--glow);
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.5s ease-in-out;
+}
+#enterBtn.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+#enterBtn:hover {
+  background: var(--neon);
+  color: #000;
+  box-shadow: var(--glow);
+}
+body.clean-mode #enterBtn {
+  background: #000000;
+  border-color: #000000;
+  color: #ffffff;
+}
+body.clean-mode #enterBtn:hover {
+  background: #333333;
+  box-shadow: 0 0 10px #999999;
+} 

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>LVA.studio™ Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Open+Sans:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/epic.css" />
+  <link rel="stylesheet" href="css/light.css" />
+  <link rel="stylesheet" href="css/cards.css" />
+  <link rel="stylesheet" href="css/buttons.css" />
+  <link rel="stylesheet" href="css/cards-portal.css" />
+  <link rel="stylesheet" href="css/health-insurance.css">
+</head>
+<body>
+  <video id="epic-bg-video" class="epic-bg-video" autoplay loop muted playsinline style="display:none">
+    <source src="media/background.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+  
+  <!-- Fixed Top Menu -->
+  <div class="top-menu">
+    <div class="menu-group">
+      <button id="side-menu-toggle" class="hamburger-btn" aria-label="Open side menu">
+        <i class="fas fa-bars"></i>
+      </button>
+      <span class="brand-text"> Living Victorious Always™ </span>
+      <img
+        src="https://static.wixstatic.com/media/b2f74b_35458543ca6540f4bad3ad4cb452ffac~mv2.png/v1/fill/w_209,h_209,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/lva%20baby%20blue%203d%20no%20backgroud.png"
+        alt="LVA Logo"
+        class="menu-icon"
+        id="logo-btn"
+        style="cursor:pointer;"
+        onclick="enterPortal()"
+      />
+    </div>
+  </div>
+  
+  <!-- Side Menu and Overlay -->
+  <div id="side-menu-overlay" class="side-menu-overlay" style="display:none;"></div>
+  <nav id="side-menu" class="side-menu" style="display:none;">
+    <button id="close-side-menu" class="close-side-menu" aria-label="Close side menu">&times;</button>
+    <div class="side-menu-content">
+      <button class="toggle-mode-btn light-btn" onclick="toggleFontMode(this)" aria-label="Toggle theme">
+        <svg class="lightbulb-icon" width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <g>
+            <ellipse cx="16" cy="13" rx="8" ry="10" fill="#fffbe6" class="bulb-glow"/>
+            <path d="M16 3C10.477 3 6 7.477 6 13c0 3.866 2.5 6.5 4 8v2a2 2 0 002 2h4a2 2 0 002-2v-2c1.5-1.5 4-4.134 4-8 0-5.523-4.477-10-10-10z" fill="#ffe066" stroke="#bfa600" stroke-width="2"/>
+            <rect x="13" y="25" width="6" height="3" rx="1.5" fill="#bfa600"/>
+            <rect x="14" y="28" width="4" height="2" rx="1" fill="#bfa600"/>
+          </g>
+        </svg>
+      </button>
+      <button id="fullscreen-toggle" class="fullscreen-btn">Fullscreen</button>
+    </div>
+  </nav>
+  
+  <!-- Main Content Area -->
+  <div id="main-content">
+    <!-- Portal Layout (default view) -->
+    <div id="layout">
+      <div id="spinner"></div>
+      <div id="progress">Loading...</div>
+      <div id="quotes">"Creating Clarity in the Cloud — Health Insurance to Home Design"</div>
+      <button id="enterBtn" onclick="enterPortal()">Enter Portal</button>
+    </div>
+    
+    <!-- Service Content Containers (hidden by default, shown when navigated) -->
+    <div id="health-root" style="display:none;"></div>
+    <div id="solar-root" style="display:none;"></div>
+    <div id="contracting-root" style="display:none;"></div>
+    <div id="model-root" style="display:none;"></div>
+    <div id="wix-root" style="display:none;"></div>
+    <div id="nil-root" style="display:none;"></div>
+    
+    <!-- Service Content Container (for portal or shop) -->
+    <div id="portalContent" style="display:none;"></div>
+  </div>
+  
+  <footer id="footer-line">
+    <p style="text-align: center; font-weight: bold;">LVA.studio™</p>
+  </footer>
+  
+  <script src="js/script.js"></script>
+  <script src="js/health-insurance.js"></script>
+  <script src="js/solar.js"></script>
+  <script src="js/contracting.js"></script>
+  <script src="js/3d-model.js"></script>
+  <script src="js/wix.js"></script>
+  <script src="js/nilpartners.js"></script>
+  <script src="js/portal.js"></script>
+  <script src="js/cards.js"></script>
+  <script src="js/cards-portal.js"></script>
+  <script src="js/shop.js"></script>
+  <script src="js/main.js"></script>
+  
+  <script type="module">
+    import { toggleFontMode } from './js/theme.js';
+    window.toggleFontMode = toggleFontMode;
+    // On load, ensure epic mode is set
+    document.body.classList.remove('clean-mode');
+    document.body.classList.add('epic-mode');
+    const bgVideo = document.getElementById('epic-bg-video');
+    if (bgVideo) bgVideo.style.display = 'block';
+    // Set button state
+    const button = document.querySelector('.toggle-mode-btn');
+    if (button) {
+      button.textContent = 'THEME';
+      button.classList.remove('light-btn', 'epic-btn');
+      button.classList.add('epic-btn');
+    }
+  </script>
+</body>
+</html> 

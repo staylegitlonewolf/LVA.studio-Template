@@ -1,0 +1,6 @@
+.card-title {
+  color: var(--title-color) !important;
+}
+.card-desc {
+  color: var(--text-color) !important;
+} 

@@ -1,0 +1,50 @@
+body {
+  background: transparent;
+  color: var(--text-color);
+}
+.top-menu {
+  background: rgba(0, 0, 0, 0.9);
+  color: #ffffff;
+}
+.card-title {
+  color: var(--title-color) !important;
+}
+.flip-front,
+.flip-back,
+.flip-front p,
+.flip-back p,
+.card-desc {
+  color: var(--text-color) !important;
+}
+.footer-cta {
+  color: var(--text-color);
+}
+
+body.epic-mode .epic-bg-video {
+  display: block !important;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  object-fit: cover !important;
+  z-index: -1 !important;
+  pointer-events: none !important;
+  opacity: 0.7 !important;
+  /* Debug border removed */
+}
+
+.epic-bg-video {
+  display: none;
+}
+
+body.epic-mode .nil-card p,
+body.epic-mode .solar-card p,
+body.epic-mode .health-card p,
+body.epic-mode .contracting-card p {
+  color: #111 !important;
+}
+
+body.epic-mode .model-card p {
+  color: #111 !important;
+} 
