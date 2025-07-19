@@ -401,7 +401,6 @@ body.clean-mode .flip-back p {
   margin-right: 10px;
   font-size: 20px;
 }
-.ribbon,
 .tooltip .ribbon {
   display: inline-block;
   margin-left: 8px;
@@ -414,7 +413,10 @@ body.clean-mode .flip-back p {
   text-transform: uppercase;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   text-align: center;
-  margin-top: 8px;
+  margin-top: 6px;
+  vertical-align: top;
+  position: relative;
+  top: -1px;
 }
 .tooltip {
   position: absolute;
@@ -423,7 +425,7 @@ body.clean-mode .flip-back p {
   background: #001a33;
   border: 1px solid #00bfff;
   color: #fff;
-  padding: 10px;
+  padding: 12px;
   font-size: 14px;
   border-radius: 6px;
   opacity: 0;
@@ -432,6 +434,7 @@ body.clean-mode .flip-back p {
   transition: all 0.2s ease;
   width: 250px;
   z-index: 10;
+  line-height: 1.4;
 }
 .product-card ul li:hover .tooltip {
   opacity: 1;
