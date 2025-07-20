@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup Main Collection - LVA Studio</title>
+    <style>
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .setup-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .setup-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .setup-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .setup-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .setup-button {
+            background: linear-gradient(135deg, #00bfff, #0099cc);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .setup-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 191, 255, 0.3);
+        }
+        
+        .setup-button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .setup-info {
+            background: rgba(0, 191, 255, 0.1);
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .setup-info h3 {
+            color: #00bfff;
+            margin-bottom: 15px;
+        }
+        
+        .setup-info ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .setup-info li {
+            margin-bottom: 8px;
+        }
+        
+        .console-output {
+            background: #1e1e1e;
+            color: #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .status {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .status.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+        
+        .status.error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+        
+        .status.info {
+            background: rgba(0, 191, 255, 0.1);
+            color: #00bfff;
+            border: 1px solid rgba(0, 191, 255, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="setup-container">
+        <div class="setup-header">
+            <h1 class="setup-title">🔧 Setup Main Collection</h1>
+            <p class="setup-subtitle">Create the "Main" collection for user profiles in your Wix CMS</p>
+        </div>
+        
+        <div class="setup-info">
+            <h3>📋 What this will create:</h3>
+            <ul>
+                <li><strong>Collection ID:</strong> "Main"</li>
+                <li><strong>Display Name:</strong> "User Profiles"</li>
+                <li><strong>Fields:</strong> Email, Username, First/Last Name, Bio, Social Links, Preferences, etc.</li>
+                <li><strong>Permissions:</strong> Site members can create/update, only admins can delete</li>
+                <li><strong>Features:</strong> Rich text bio, social media links, user preferences</li>
+            </ul>
+        </div>
+        
+        <div id="status-container"></div>
+        
+        <button id="setup-button" class="setup-button" onclick="runSetup()">
+            🚀 Create Main Collection
+        </button>
+        
+        <div class="console-output" id="console-output">
+🔧 Setup script ready...
+Click the button above to create the Main collection.
+        </div>
+    </div>
+
+    <script type="module">
+        import { WIX_CONFIG } from './src/config/wix.js';
+        
+        window.WIX_CONFIG = WIX_CONFIG;
+        
+        const createMainCollection = async () => {
+            try {
+                log('🚀 Creating Main collection for user profiles...');
+                log('🌐 Using site ID: ' + WIX_CONFIG.siteId);
+                
+                const collectionData = {
+                    collection: {
+                        id: "Main",
+                        displayName: "User Profiles",
+                        displayField: "displayName",
+                        fields: [
+                            // Basic Information
+                            {
+                                key: "email",
+                                displayName: "Email",
+                                type: "TEXT",
+                                required: true,
+                                immutable: true
+                            },
+                            {
+                                key: "memberId",
+                                displayName: "Member ID",
+                                type: "TEXT",
+                                required: true,
+                                immutable: true
+                            },
+                            {
+                                key: "username",
+                                displayName: "Username",
+                                type: "TEXT",
+                                required: false
+                            },
+                            {
+                                key: "firstName",
+                                displayName: "First Name",
+                                type: "TEXT",
+                                required: false
+                            },
+                            {
+                                key: "lastName",
+                                displayName: "Last Name",
+                                type: "TEXT",
+                                required: false
+                            },
+                            {
+                                key: "displayName",
+                                displayName: "Display Name",
+                                type: "TEXT",
+                                required: false
+                            },
+                            {
+                                key: "phone",
+                                displayName: "Phone",
+                                type: "TEXT",
+                                required: false
+                            },
+                            {
+                                key: "profileImage",
+                                displayName: "Profile Image",
+                                type: "URL",
+                                required: false
+                            },
+                            
+                            // Status and Account Info
+                            {
+                                key: "status",
+                                displayName: "Account Status",
+                                type: "TEXT",
+                                required: true
+                            },
+                            {
+                                key: "accountType",
+                                displayName: "Account Type",
+                                type: "TEXT",
+                                required: true
+                            },
+                            {
+                                key: "memberSince",
+                                displayName: "Member Since",
+                                type: "DATETIME",
+                                required: true
+                            },
+                            {
+                                key: "lastLogin",
+                                displayName: "Last Login",
+                                type: "DATETIME",
+                                required: false
+                            },
+                            {
+                                key: "isEmailVerified",
+                                displayName: "Email Verified",
+                                type: "BOOLEAN",
+                                required: false
+                            },
+                            
+                            // About Me Section
+                            {
+                                key: "bio",
+                                displayName: "Bio",
+                                type: "RICH_TEXT",
+                                required: false
+                            },
+                            {
+                                key: "location",
+                                displayName: "Location",
+                                type: "TEXT",
+                                required: false
+                            },
+                            {
+                                key: "website",
+                                displayName: "Website",
+                                type: "URL",
+                                required: false
+                            },
+                            
+                            // Social Links (Object)
+                            {
+                                key: "socialLinks",
+                                displayName: "Social Links",
+                                type: "OBJECT",
+                                typeMetadata: {
+                                    object: {
+                                        fields: [
+                                            {
+                                                key: "facebook",
+                                                displayName: "Facebook",
+                                                type: "URL"
+                                            },
+                                            {
+                                                key: "twitter",
+                                                displayName: "Twitter",
+                                                type: "URL"
+                                            },
+                                            {
+                                                key: "instagram",
+                                                displayName: "Instagram",
+                                                type: "URL"
+                                            },
+                                            {
+                                                key: "linkedin",
+                                                displayName: "LinkedIn",
+                                                type: "URL"
+                                            }
+                                        ]
+                                    }
+                                },
+                                required: false
+                            },
+                            
+                            // Skills and Interests (Arrays)
+                            {
+                                key: "skills",
+                                displayName: "Skills",
+                                type: "ARRAY_STRING",
+                                required: false
+                            },
+                            {
+                                key: "interests",
+                                displayName: "Interests",
+                                type: "ARRAY_STRING",
+                                required: false
+                            },
+                            
+                            // Preferences (Object)
+                            {
+                                key: "preferences",
+                                displayName: "Preferences",
+                                type: "OBJECT",
+                                typeMetadata: {
+                                    object: {
+                                        fields: [
+                                            {
+                                                key: "notifications",
+                                                displayName: "Email Notifications",
+                                                type: "BOOLEAN"
+                                            },
+                                            {
+                                                key: "marketing",
+                                                displayName: "Marketing Emails",
+                                                type: "BOOLEAN"
+                                            }
+                                        ]
+                                    }
+                                },
+                                required: false
+                            },
+                            
+                            // System Fields
+                            {
+                                key: "createdAt",
+                                displayName: "Created At",
+                                type: "DATETIME",
+                                required: true,
+                                readOnly: true
+                            },
+                            {
+                                key: "updatedAt",
+                                displayName: "Updated At",
+                                type: "DATETIME",
+                                required: true
+                            },
+                            {
+                                key: "deletedAt",
+                                displayName: "Deleted At",
+                                type: "DATETIME",
+                                required: false
+                            }
+                        ],
+                        permissions: {
+                            insert: "SITE_MEMBER",
+                            update: "SITE_MEMBER",
+                            remove: "ADMIN",
+                            read: "SITE_MEMBER"
+                        },
+                        plugins: [
+                            {
+                                type: "CMS",
+                                cmsOptions: {
+                                    siteSort: {
+                                        sort: [
+                                            {
+                                                fieldKey: "createdAt",
+                                                direction: "DESC"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        ]
+                    }
+                };
+
+                log('📋 Collection data prepared...');
+                
+                const response = await fetch('https://www.wixapis.com/wix-data/v2/collections', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': WIX_CONFIG.apiKey,
+                        'Content-Type': 'application/json',
+                        'wix-site-id': WIX_CONFIG.siteId
+                    },
+                    body: JSON.stringify(collectionData)
+                });
+
+                log('📡 Response Status: ' + response.status);
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    log('❌ Error Response: ' + errorText);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                log('✅ Collection created successfully!');
+                log('📋 Collection ID: ' + result.collection.id);
+                log('📋 Collection Name: ' + result.collection.displayName);
+                log('📋 Fields Count: ' + result.collection.fields.length);
+                
+                return result;
+            } catch (error) {
+                log('❌ Error creating collection: ' + error.message);
+                throw error;
+            }
+        };
+
+        function log(message) {
+            const consoleOutput = document.getElementById('console-output');
+            consoleOutput.textContent += '\n' + message;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('status-container');
+            statusContainer.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+
+        window.runSetup = async () => {
+            const button = document.getElementById('setup-button');
+            button.disabled = true;
+            button.textContent = '🔄 Creating Collection...';
+            
+            try {
+                showStatus('🚀 Starting collection creation...', 'info');
+                await createMainCollection();
+                showStatus('✅ Main collection created successfully! You can now use the profile management system.', 'success');
+                button.textContent = '✅ Collection Created!';
+            } catch (error) {
+                showStatus('❌ Failed to create collection: ' + error.message, 'error');
+                button.disabled = false;
+                button.textContent = '🚀 Create Main Collection';
+            }
+        };
+    </script>
+</body>
+</html> 

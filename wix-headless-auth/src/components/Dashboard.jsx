@@ -1,143 +1,146 @@
-import React, { useState } from 'react';
-import authService from '../services/authService.js';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { authService } from '../services/authService.js';
+import ProfileSettings from './ProfileSettings.jsx';
 
 const Dashboard = ({ user, onLogout }) => {
-  const [profileData, setProfileData] = useState({
-    firstName: user.firstName || '',
-    lastName: user.lastName || '',
-    email: user.email || ''
-  });
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [currentUser, setCurrentUser] = useState(user);
+  const [activeView, setActiveView] = useState('overview');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setProfileData({
-      ...profileData,
-      [e.target.name]: e.target.value
-    });
-  };
 
-  const handleUpdateProfile = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setMessage('');
 
-    try {
-      await authService.updateProfile(user._id, profileData);
-      setMessage('Profile updated successfully!');
-      setIsEditing(false);
-    } catch (error) {
-      setMessage(`Error updating profile: ${error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    // Listen for user creation events
+    const handleUserCreated = (event) => {
+      const { user, source } = event.detail;
+      console.log(`🎉 New user created via ${source}:`, user);
+      setMessage(`Welcome! Your account has been successfully created via ${source}.`);
+    };
+    
+    window.addEventListener('userCreatedInWix', handleUserCreated);
+    
+    return () => {
+      window.removeEventListener('userCreatedInWix', handleUserCreated);
+    };
+  }, []);
 
   const handleLogout = () => {
     authService.signout();
     onLogout();
+    navigate('/');
   };
 
-  return (
-    <div className="dashboard-container">
-      <div className="dashboard-card">
-        <div className="dashboard-header">
-          <h2 className="dashboard-title">Welcome, {user.firstName}!</h2>
-          <button onClick={handleLogout} className="logout-btn">
-            Logout
-          </button>
-        </div>
+  const handleProfileUpdate = (updatedUser) => {
+    setCurrentUser(updatedUser);
+    setMessage('Profile updated successfully!');
+  };
 
-        {message && (
-          <div className={message.includes('Error') ? 'error-message' : 'success-message'}>
-            {message}
-          </div>
-        )}
-
-        <div className="info-section">
-          <h3>Account Information</h3>
-          <p><strong>Email:</strong> {user.email}</p>
-          <p><strong>Member Since:</strong> {new Date(user.createdAt).toLocaleDateString()}</p>
-          <p><strong>Account Status:</strong> {user.isActive ? 'Active' : 'Inactive'}</p>
-        </div>
-
-        <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-            <h3 style={{ margin: 0, color: '#00bfff', fontSize: '18px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '1px' }}>
-              Profile Details
-            </h3>
-            <button 
-              onClick={() => setIsEditing(!isEditing)} 
-              className="edit-btn"
-            >
-              {isEditing ? 'Cancel' : 'Edit Profile'}
-            </button>
-          </div>
-
-          {isEditing ? (
-            <form onSubmit={handleUpdateProfile}>
-              <div className="form-group">
-                <label htmlFor="firstName" className="form-label">
-                  First Name
-                </label>
-                <input
-                  type="text"
-                  id="firstName"
-                  name="firstName"
-                  className="form-input"
-                  value={profileData.firstName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="lastName" className="form-label">
-                  Last Name
-                </label>
-                <input
-                  type="text"
-                  id="lastName"
-                  name="lastName"
-                  className="form-input"
-                  value={profileData.lastName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email" className="form-label">
-                  Email Address
-                </label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  className="form-input"
-                  value={profileData.email}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="btn"
-                disabled={loading}
-              >
-                {loading ? 'Updating...' : 'Update Profile'}
-              </button>
-            </form>
+  const renderOverview = () => (
+    <div className="dashboard-overview">
+      <div className="welcome-section">
+        <div className="user-avatar">
+          {currentUser.member?.profile?.photo?.url ? (
+            <img src={currentUser.member.profile.photo.url} alt="Profile" />
           ) : (
-            <div className="info-section">
-              <p><strong>First Name:</strong> {user.firstName}</p>
-              <p><strong>Last Name:</strong> {user.lastName}</p>
-              <p><strong>Email:</strong> {user.email}</p>
+            <div className="avatar-placeholder">
+              {currentUser.member?.profile?.nickname?.charAt(0) || 'U'}
             </div>
           )}
         </div>
+        <div className="welcome-text">
+          <h2>Welcome back, {currentUser.member?.profile?.nickname || currentUser.member?.profile?.firstName || 'User'}!</h2>
+          <p>Member since {currentUser.member?._createdDate ? new Date(currentUser.member._createdDate).toLocaleDateString() : 'Recently'}</p>
+        </div>
+      </div>
+
+      {message && (
+        <div className={message.includes('Error') ? 'error-message' : 'success-message'}>
+          {message}
+        </div>
+      )}
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <h3>Account Status</h3>
+          <p className={currentUser.member?.status === 'ACTIVE' ? 'status-active' : 'status-inactive'}>
+            {currentUser.member?.status === 'ACTIVE' ? 'Active' : 'Active (New Member)'}
+          </p>
+        </div>
+
+        <div className="stat-card">
+          <h3>Last Login</h3>
+          <p>{currentUser.member?.lastLoginDate ? new Date(currentUser.member.lastLoginDate).toLocaleString() : 'First time login'}</p>
+        </div>
+
+        {currentUser.wixContactId && (
+          <div className="stat-card">
+            <h3>Wix Contact</h3>
+            <p>✅ Connected</p>
+          </div>
+        )}
+      </div>
+
+      <div className="quick-info">
+        <h3>Quick Information</h3>
+        <div className="info-grid">
+          <div className="info-item">
+            <strong>Email:</strong> {currentUser.member?.loginEmail || currentUser.member?.profile?.email || 'Not provided'}
+          </div>
+          <div className="info-item">
+            <strong>Username:</strong> {currentUser.member?.profile?.slug || 'Not provided'}
+          </div>
+          {currentUser.member?.profile?.phones?.[0] && (
+            <div className="info-item">
+              <strong>Phone:</strong> {currentUser.member.profile.phones[0]}
+            </div>
+          )}
+          {currentUser.member?.profile?.customFields?.company && (
+            <div className="info-item">
+              <strong>Company:</strong> {currentUser.member.profile.customFields.company}
+            </div>
+          )}
+          {currentUser.member?.profile?.addresses?.[0] && (
+            <div className="info-item">
+              <strong>Location:</strong> {currentUser.member.profile.addresses[0].city}, {currentUser.member.profile.addresses[0].country}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="dashboard-container">
+      <div className="dashboard-header">
+        <div className="dashboard-title">
+          <h1>LVA.studio™ Dashboard</h1>
+          <p>Living Victorious Always</p>
+        </div>
+        <button onClick={handleLogout} className="logout-btn">
+          Logout
+        </button>
+      </div>
+
+      <div className="dashboard-nav">
+        <button
+          className={`nav-btn ${activeView === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveView('overview')}
+        >
+          Overview
+        </button>
+        <button
+          className={`nav-btn ${activeView === 'profile' ? 'active' : ''}`}
+          onClick={() => setActiveView('profile')}
+        >
+          Profile Settings
+        </button>
+      </div>
+
+      <div className="dashboard-content">
+        {activeView === 'overview' && renderOverview()}
+        {activeView === 'profile' && <ProfileSettings />}
       </div>
     </div>
   );

@@ -1,136 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import authService from '../services/authService.js';
-import wixOAuthService from '../services/wixOAuthService.js';
+import React, { useState } from 'react';
+import { wixAuthService } from '../services/wixAuthService.js';
 
-const LoginForm = ({ onSwitchToSignup, onLoginSuccess }) => {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [loading, setLoading] = useState(false);
+const LoginForm = ({ onLoginSuccess }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    // Initialize OAuth service when component mounts
-    // The enhanced OAuth service handles initialization automatically
-  }, []);
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError('');
-
+  const handleWixLogin = async () => {
     try {
-      const result = await authService.signin(formData.email, formData.password);
-      if (result.success) {
-        onLoginSuccess(result.user);
-      }
-    } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    setError('');
-
-    try {
-      // Get the OAuth authorization URL
-      const authUrl = await wixOAuthService.getAuthUrl();
+      setIsLoading(true);
+      setError('');
       
-      // Redirect to Google OAuth
-      window.location.href = authUrl;
+      console.log('🔗 Initiating Wix authentication...');
+      
+      // Create redirect session for Wix authentication
+      const redirectSession = await wixAuthService.createAuthRedirect(
+        window.location.origin + '/auth-callback'
+      );
+      
+      console.log('✅ Redirect session created, redirecting to:', redirectSession.fullUrl);
+      
+      // Redirect to Wix authentication page
+      window.location.href = redirectSession.fullUrl;
+      
     } catch (error) {
-      setError('Google sign-in failed. Please try again.');
-      setLoading(false);
+      console.error('❌ Wix login error:', error);
+      setError(`Login failed: ${error.message}`);
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="auth-card">
-      <div className="lva-header">
-        <div className="lva-logo">LVA.studio™</div>
-        <div className="lva-tagline">Living Victorious Always</div>
-      </div>
-      
-      <h2 className="auth-title">Welcome Back</h2>
+    <div className="login-form">
+      <h2>Welcome Back</h2>
+      <p>Sign in to your LVA.studio™ account</p>
       
       {error && (
         <div className="error-message">
-          {error}
+          ❌ {error}
+          {error.includes('System error occurred') && (
+            <div className="setup-hint">
+              <p><strong>🔧 Setup Required:</strong></p>
+              <p>You need to configure your OAuth client ID. See <code>OAUTH_SETUP.md</code> for instructions.</p>
+              <p>1. Go to your Wix Headless project dashboard</p>
+              <p>2. Create an OAuth app and get the Client ID</p>
+              <p>3. Update <code>src/config/wix.js</code> with your Client ID</p>
+            </div>
+          )}
         </div>
       )}
-
-      <form onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">
-            Email Address
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            className="form-input"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            placeholder="Enter your email"
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="password" className="form-label">
-            Password
-          </label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="form-input"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="Enter your password"
-          />
-        </div>
-
-        <button
-          type="submit"
-          className="btn"
-          disabled={loading}
+      
+      <div className="auth-buttons">
+        <button 
+          className="wix-login-btn"
+          onClick={handleWixLogin}
+          disabled={isLoading}
         >
-          {loading ? 'Signing In...' : 'Sign In'}
+          {isLoading ? '🔄 Connecting to Wix...' : '🔗 Sign in with Wix'}
         </button>
-      </form>
-
-      <div className="divider">
-        <span>OR</span>
-      </div>
-
-      <div className="google-auth-section">
-        <button
-          onClick={handleGoogleSignIn}
-          className="btn google-btn"
-          disabled={loading}
+        
+        <div className="divider">
+          <span>or</span>
+        </div>
+        
+        <button 
+          className="google-login-btn"
+          onClick={handleWixLogin} // Use same Wix auth for now
+          disabled={isLoading}
         >
-          {loading ? 'Signing In...' : 'Sign in with Google'}
+          {isLoading ? '🔄 Connecting...' : '🔗 Sign in with Google (via Wix)'}
         </button>
       </div>
-
-      <div className="auth-switch">
-        Don't have an account?{' '}
-        <a href="#" onClick={onSwitchToSignup}>
-          Sign up here
-        </a>
+      
+      <div className="login-info">
+        <p>✨ Wix handles all authentication securely</p>
+        <p>🔐 Supports Google, Facebook, and email login</p>
+        <p>👤 Automatic user creation in Wix CMS</p>
       </div>
     </div>
   );

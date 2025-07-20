@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVA Studio Auth Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        .auth-button {
+            background: #28a745;
+        }
+        .auth-button:hover { background: #1e7e34; }
+    </style>
+</head>
+<body>
+    <h1>🔐 LVA Studio Authentication Test</h1>
+    
+    <div class="test-section">
+        <h2>🏗️ System Status</h2>
+        <div id="system-status" class="status info">Checking system status...</div>
+        <button onclick="checkSystemStatus()">Refresh Status</button>
+    </div>
+
+    <div class="test-section">
+        <h2>🔗 Backend Connection</h2>
+        <div id="backend-status" class="status info">Testing backend connection...</div>
+        <button onclick="testBackendConnection()">Test Backend</button>
+    </div>
+
+    <div class="test-section">
+        <h2>🔐 Authentication Test</h2>
+        <div id="auth-status" class="status info">Ready to test authentication</div>
+        <button class="auth-button" onclick="testAuthentication()">Test Login Popup</button>
+        <button onclick="checkAuthStatus()">Check Auth Status</button>
+        <button onclick="clearAuth()">Clear Auth Data</button>
+    </div>
+
+    <div class="test-section">
+        <h2>📋 Test Results</h2>
+        <div id="test-results"></div>
+    </div>
+
+    <script>
+        const BACKEND_URL = 'https://staylegit.wixstudio.com/lvastudiot1';
+        const FRONTEND_URL = 'https://staylegitlonewolf.github.io/LVA.studio-Template/';
+
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+        }
+
+        function addTestResult(message, type = 'info') {
+            const results = document.getElementById('test-results');
+            const result = document.createElement('div');
+            result.className = `status ${type}`;
+            result.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            results.appendChild(result);
+        }
+
+        async function checkSystemStatus() {
+            updateStatus('system-status', 'Checking system status...', 'info');
+            
+            try {
+                // Check if auth integration script is loaded
+                if (typeof window.handleAuthClick === 'function') {
+                    updateStatus('system-status', '✅ Auth integration script loaded', 'success');
+                    addTestResult('Auth integration script is available', 'success');
+                } else {
+                    updateStatus('system-status', '❌ Auth integration script not loaded', 'error');
+                    addTestResult('Auth integration script not found', 'error');
+                }
+
+                // Check localStorage for auth data
+                const token = localStorage.getItem('wix_access_token');
+                if (token) {
+                    updateStatus('system-status', '✅ Auth token found in localStorage', 'success');
+                    addTestResult('Auth token found in localStorage', 'success');
+                } else {
+                    updateStatus('system-status', 'ℹ️ No auth token found (expected for new users)', 'info');
+                    addTestResult('No auth token found (expected)', 'info');
+                }
+
+            } catch (error) {
+                updateStatus('system-status', `❌ Error checking system: ${error.message}`, 'error');
+                addTestResult(`System check error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBackendConnection() {
+            updateStatus('backend-status', 'Testing backend connection...', 'info');
+            
+            try {
+                const response = await fetch(`${BACKEND_URL}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    updateStatus('backend-status', '✅ Backend connection successful', 'success');
+                    addTestResult(`Backend health check: ${data.status}`, 'success');
+                } else {
+                    updateStatus('backend-status', `❌ Backend error: ${data.error || response.statusText}`, 'error');
+                    addTestResult(`Backend error: ${data.error || response.statusText}`, 'error');
+                }
+            } catch (error) {
+                updateStatus('backend-status', `❌ Connection failed: ${error.message}`, 'error');
+                addTestResult(`Backend connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        function testAuthentication() {
+            updateStatus('auth-status', 'Opening authentication popup...', 'info');
+            addTestResult('Attempting to open auth popup', 'info');
+            
+            try {
+                if (typeof window.handleAuthClick === 'function') {
+                    window.handleAuthClick();
+                    updateStatus('auth-status', '✅ Auth popup opened successfully', 'success');
+                    addTestResult('Auth popup opened', 'success');
+                } else {
+                    updateStatus('auth-status', '❌ Auth function not available', 'error');
+                    addTestResult('Auth function not available', 'error');
+                }
+            } catch (error) {
+                updateStatus('auth-status', `❌ Auth test failed: ${error.message}`, 'error');
+                addTestResult(`Auth test error: ${error.message}`, 'error');
+            }
+        }
+
+        function checkAuthStatus() {
+            const token = localStorage.getItem('wix_access_token');
+            const userData = localStorage.getItem('wix_user_data');
+            
+            if (token) {
+                updateStatus('auth-status', '✅ User is authenticated', 'success');
+                addTestResult('User is authenticated', 'success');
+                
+                if (userData) {
+                    try {
+                        const user = JSON.parse(userData);
+                        addTestResult(`User: ${user.profile?.firstName || user.loginEmail || 'Unknown'}`, 'success');
+                    } catch (e) {
+                        addTestResult('User data found but could not parse', 'info');
+                    }
+                }
+            } else {
+                updateStatus('auth-status', 'ℹ️ User is not authenticated', 'info');
+                addTestResult('User is not authenticated', 'info');
+            }
+        }
+
+        function clearAuth() {
+            localStorage.removeItem('wix_access_token');
+            localStorage.removeItem('wix_refresh_token');
+            localStorage.removeItem('wix_user_data');
+            localStorage.removeItem('wix_oauth_data');
+            
+            updateStatus('auth-status', '✅ Auth data cleared', 'success');
+            addTestResult('Auth data cleared', 'success');
+        }
+
+        // Listen for messages from auth popup
+        window.addEventListener('message', (event) => {
+            if (event.origin !== BACKEND_URL) return;
+            
+            if (event.data.type === 'AUTH_SUCCESS') {
+                updateStatus('auth-status', '✅ Authentication successful!', 'success');
+                addTestResult('Authentication successful', 'success');
+            } else if (event.data.type === 'AUTH_ERROR') {
+                updateStatus('auth-status', `❌ Authentication failed: ${event.data.error}`, 'error');
+                addTestResult(`Authentication failed: ${event.data.error}`, 'error');
+            }
+        });
+
+        // Run initial checks
+        window.addEventListener('load', () => {
+            checkSystemStatus();
+            testBackendConnection();
+        });
+    </script>
+</body>
+</html> 

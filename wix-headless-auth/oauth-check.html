@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAuth Configuration Check - LVA Studio</title>
+    <style>
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .check-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .check-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .check-title {
+            font-size: 2rem;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .check-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .config-section {
+            background: rgba(0, 191, 255, 0.1);
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .config-section h3 {
+            color: #00bfff;
+            margin-bottom: 15px;
+        }
+        
+        .config-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+        }
+        
+        .config-item:last-child {
+            border-bottom: none;
+        }
+        
+        .config-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .config-value {
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .test-button {
+            background: linear-gradient(135deg, #00bfff, #0099cc);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 191, 255, 0.3);
+        }
+        
+        .console-output {
+            background: #1e1e1e;
+            color: #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        
+        .status {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+        
+        .status.error {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+        
+        .status.warning {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        
+        .status.success {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="check-container">
+        <div class="check-header">
+            <h1 class="check-title">🔧 OAuth Configuration Check</h1>
+            <p class="check-subtitle">Debug the 400 Bad Request error</p>
+        </div>
+        
+        <div id="status-container"></div>
+        
+        <div class="config-section">
+            <h3>📋 Current Configuration</h3>
+            <div id="config-details"></div>
+        </div>
+        
+        <div class="config-section">
+            <h3>🔗 OAuth URLs</h3>
+            <div id="oauth-urls"></div>
+        </div>
+        
+        <button id="test-button" class="test-button" onclick="testOAuthUrl()">
+            🧪 Test OAuth URL
+        </button>
+        
+        <div class="console-output" id="console-output">
+🔧 OAuth Configuration Check...
+        </div>
+    </div>
+
+    <script type="module">
+        import { WIX_CONFIG } from './src/config/wix.js';
+        
+        function log(message) {
+            const consoleOutput = document.getElementById('console-output');
+            consoleOutput.textContent += '\n' + message;
+            consoleOutput.scrollTop = consoleOutput.scrollHeight;
+        }
+        
+        function showStatus(message, type = 'info') {
+            const statusContainer = document.getElementById('status-container');
+            statusContainer.innerHTML = `<div class="status ${type}">${message}</div>`;
+        }
+        
+        function updateConfigDetails() {
+            const configDetails = document.getElementById('config-details');
+            configDetails.innerHTML = `
+                <div class="config-item">
+                    <span class="config-label">Site ID:</span>
+                    <span class="config-value">${WIX_CONFIG.siteId}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Client ID:</span>
+                    <span class="config-value">${WIX_CONFIG.clientId}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">API Key:</span>
+                    <span class="config-value">${WIX_CONFIG.apiKey ? '✅ Set' : '❌ Missing'}</span>
+                </div>
+            `;
+        }
+        
+        function updateOAuthUrls() {
+            const oauthUrls = document.getElementById('oauth-urls');
+            const currentOrigin = window.location.origin;
+            const authCallbackUrl = currentOrigin + '/auth-callback';
+            const authUrl = `https://staylegit.wixstudio.com/lvastudiot1/_api/oauth2/authorize?clientId=${WIX_CONFIG.clientId}&responseType=code&scope=offline_access&redirectUri=${encodeURIComponent(authCallbackUrl)}`;
+            
+            oauthUrls.innerHTML = `
+                <div class="config-item">
+                    <span class="config-label">Current Origin:</span>
+                    <span class="config-value">${currentOrigin}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">Auth Callback URL:</span>
+                    <span class="config-value">${authCallbackUrl}</span>
+                </div>
+                <div class="config-item">
+                    <span class="config-label">OAuth Auth URL:</span>
+                    <span class="config-value">${authUrl.substring(0, 100)}...</span>
+                </div>
+            `;
+        }
+        
+        window.testOAuthUrl = () => {
+            const currentOrigin = window.location.origin;
+            const authCallbackUrl = currentOrigin + '/auth-callback';
+            const authUrl = `https://staylegit.wixstudio.com/lvastudiot1/_api/oauth2/authorize?clientId=${WIX_CONFIG.clientId}&responseType=code&scope=offline_access&redirectUri=${encodeURIComponent(authCallbackUrl)}`;
+            
+            log('🧪 Testing OAuth URL...');
+            log('🔗 Opening: ' + authUrl);
+            
+            // Open in new tab
+            window.open(authUrl, '_blank');
+            
+            showStatus('🧪 OAuth URL opened in new tab. Check for any error messages.', 'warning');
+        };
+        
+        // Initialize
+        log('🔧 OAuth Configuration Check');
+        log('============================');
+        log('');
+        
+        log('📋 Current Configuration:');
+        log('  Site ID: ' + WIX_CONFIG.siteId);
+        log('  Client ID: ' + WIX_CONFIG.clientId);
+        log('  API Key: ' + (WIX_CONFIG.apiKey ? '✅ Set' : '❌ Missing'));
+        log('');
+        
+        log('🌐 Development URLs:');
+        log('  Current Origin: ' + window.location.origin);
+        log('  Auth Callback URL: ' + window.location.origin + '/auth-callback');
+        log('');
+        
+        log('🔍 Common Issues:');
+        log('  ❌ 400 Bad Request: Redirect URI mismatch');
+        log('  ❌ 401 Unauthorized: Invalid Client ID');
+        log('  ❌ 403 Forbidden: OAuth app not configured properly');
+        log('');
+        
+        log('🛠️ Troubleshooting Steps:');
+        log('  1. Verify Client ID is correct in src/config/wix.js');
+        log('  2. Check Redirect URI in Wix OAuth app settings');
+        log('  3. Ensure OAuth app is enabled and configured');
+        log('  4. Try accessing the auth URL directly to see the error');
+        log('');
+        
+        updateConfigDetails();
+        updateOAuthUrls();
+        
+        showStatus('🔧 Configuration loaded. Click "Test OAuth URL" to debug the 400 error.', 'warning');
+    </script>
+</body>
+</html> 
