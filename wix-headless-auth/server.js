@@ -167,9 +167,19 @@ app.get('/api/auth/profile/:userId', async (req, res) => {
 app.get('/api/auth/wix-oauth-url', async (req, res) => {
   try {
     const redirectUri = `${req.protocol}://${req.get('host')}/auth-callback`;
-    const authUrl = `https://www.wixapis.com/oauth2/authorize?clientId=a4452af2-5a36-41b8-80c3-446da4824e27&redirectUri=${encodeURIComponent(redirectUri)}&scope=offline_access&responseType=code&state=${Date.now()}`;
     
-    res.json({ authUrl });
+    // Use a more standard OAuth flow
+    const authUrl = new URL('https://www.wixapis.com/oauth2/authorize');
+    authUrl.searchParams.set('client_id', 'a4452af2-5a36-41b8-80c3-446da4824e27');
+    authUrl.searchParams.set('redirect_uri', redirectUri);
+    authUrl.searchParams.set('scope', 'offline_access');
+    authUrl.searchParams.set('response_type', 'code');
+    authUrl.searchParams.set('state', Date.now().toString());
+    
+    console.log('🔗 Generated OAuth URL:', authUrl.toString());
+    console.log('📍 Redirect URI:', redirectUri);
+    
+    res.json({ authUrl: authUrl.toString() });
   } catch (error) {
     console.error('Error generating OAuth URL:', error);
     res.status(500).json({ error: 'Failed to generate OAuth URL' });

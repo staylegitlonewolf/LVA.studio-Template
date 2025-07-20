@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Wix OAuth</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .info {
+            background: #e3f2fd;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+        pre {
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .url-display {
+            word-break: break-all;
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Debug Wix OAuth</h1>
+        
+        <div class="info">
+            <strong>Purpose:</strong> This page helps debug the Wix OAuth 400 Bad Request error.
+        </div>
+
+        <h2>Test Steps:</h2>
+        
+        <button onclick="testDirectOAuth()">1. Test Direct OAuth URL</button>
+        <button onclick="testBackendOAuth()">2. Test Backend OAuth URL</button>
+        <button onclick="testWixAPI()">3. Test Wix API Connection</button>
+        
+        <div id="results"></div>
+        
+        <h2>Manual OAuth URL Test:</h2>
+        <p>Try opening this URL directly in a new tab:</p>
+        <div id="manual-url" class="url-display"></div>
+        
+        <h2>Common Issues:</h2>
+        <ul>
+            <li><strong>Client ID not registered:</strong> The OAuth client might not be properly configured in Wix</li>
+            <li><strong>Redirect URI mismatch:</strong> The redirect URI might not be registered in the OAuth app</li>
+            <li><strong>Invalid scope:</strong> The requested scope might not be allowed</li>
+            <li><strong>App not published:</strong> The Wix app might not be published</li>
+        </ul>
+        
+        <h2>Next Steps:</h2>
+        <ol>
+            <li>Check if the OAuth client is properly configured in Wix Developer Center</li>
+            <li>Verify the redirect URI is registered: <code>http://localhost:3001/auth-callback</code></li>
+            <li>Ensure the app is published and active</li>
+            <li>Check if the client ID is correct</li>
+        </ol>
+    </div>
+
+    <script>
+        const backendUrl = 'http://localhost:3001';
+        
+        function showResult(message, type = 'info') {
+            const resultsDiv = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = type;
+            div.innerHTML = `<strong>${type.toUpperCase()}:</strong> ${message}`;
+            resultsDiv.appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function testDirectOAuth() {
+            clearResults();
+            showResult('Testing direct OAuth URL...', 'info');
+            
+            const redirectUri = 'http://localhost:3001/auth-callback';
+            const authUrl = new URL('https://www.wixapis.com/oauth2/authorize');
+            authUrl.searchParams.set('client_id', 'a4452af2-5a36-41b8-80c3-446da4824e27');
+            authUrl.searchParams.set('redirect_uri', redirectUri);
+            authUrl.searchParams.set('scope', 'offline_access');
+            authUrl.searchParams.set('response_type', 'code');
+            authUrl.searchParams.set('state', Date.now().toString());
+            
+            const url = authUrl.toString();
+            document.getElementById('manual-url').textContent = url;
+            
+            showResult(`Generated OAuth URL: ${url}`, 'info');
+            
+            // Try to fetch the URL to see the response
+            try {
+                const response = await fetch(url, { method: 'GET' });
+                showResult(`Response status: ${response.status}`, response.ok ? 'success' : 'error');
+                
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    showResult(`Error response: ${errorText}`, 'error');
+                } else {
+                    showResult('OAuth URL is accessible!', 'success');
+                }
+            } catch (error) {
+                showResult(`Fetch error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testBackendOAuth() {
+            clearResults();
+            showResult('Testing backend OAuth URL generation...', 'info');
+            
+            try {
+                const response = await fetch(`${backendUrl}/api/auth/wix-oauth-url`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('Backend OAuth URL generated successfully!', 'success');
+                    showResult(`URL: ${data.authUrl}`, 'info');
+                    document.getElementById('manual-url').textContent = data.authUrl;
+                } else {
+                    showResult(`Backend error: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`Backend connection error: ${error.message}`, 'error');
+            }
+        }
+
+        async function testWixAPI() {
+            clearResults();
+            showResult('Testing Wix API connection...', 'info');
+            
+            try {
+                const response = await fetch(`${backendUrl}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResult('Backend is healthy!', 'success');
+                    showResult(`Auth service initialized: ${data.authServiceInitialized}`, 'info');
+                } else {
+                    showResult(`Backend health check failed: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showResult(`Backend connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            showResult('Debug page loaded. Click the test buttons above.', 'info');
+        });
+    </script>
+</body>
+</html> 
