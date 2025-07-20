@@ -15,10 +15,7 @@ export const WIX_CONFIG = {
 
 // Helper function to get the correct API URL
 const getApiUrl = (endpoint) => {
-  // Use proxy in development, direct URL in production
-  if (import.meta.env.DEV) {
-    return `/wix-api${endpoint}`;
-  }
+  // Use direct URL for both development and production
   return `https://www.wixapis.com${endpoint}`;
 };
 

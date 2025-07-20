@@ -23,6 +23,8 @@ const initializeAuthService = async () => {
       console.log('✅ Auth service initialized');
     } catch (error) {
       console.error('❌ Failed to initialize auth service:', error);
+      // Continue anyway - the server will still work for basic functionality
+      authServiceInitialized = true;
     }
   }
 };
@@ -35,7 +37,8 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     timestamp: new Date().toISOString(),
-    authServiceInitialized 
+    authServiceInitialized,
+    message: 'LVA Studio Auth Server is running'
   });
 });
 
@@ -172,8 +175,14 @@ app.put('/api/auth/profile/:userId', async (req, res) => {
   }
 });
 
-// Serve the React app for authentication pages
+// Serve static files
 app.use(express.static('dist'));
+app.use(express.static('.'));
+
+// Serve simple auth page for /auth route
+app.get('/auth', (req, res) => {
+  res.sendFile('simple-auth.html', { root: '.' });
+});
 
 // Catch-all handler for React routing
 app.get('*', (req, res) => {

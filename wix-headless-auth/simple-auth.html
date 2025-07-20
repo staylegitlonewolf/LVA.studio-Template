@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVA Studio - Authentication</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        
+        .auth-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .lva-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .lva-logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .lva-tagline {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .form-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #45a049, #3d8b40);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            margin-top: 10px;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+        
+        .auth-switch a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #ffcdd2;
+        }
+        
+        .success-message {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid rgba(76, 175, 80, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #c8e6c9;
+        }
+        
+        .demo-mode {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 20px;
+            color: #fff3e0;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="lva-header">
+            <div class="lva-logo">LVA.studio™</div>
+            <div class="lva-tagline">Living Victorious Always</div>
+        </div>
+        
+        <div class="demo-mode">
+            🚧 Demo Mode - Backend Integration in Progress
+        </div>
+        
+        <div id="message"></div>
+        
+        <div id="login-form">
+            <h2 style="text-align: center; margin-bottom: 30px;">Welcome Back</h2>
+            
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="email" class="form-label">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password" class="form-label">Password</label>
+                    <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Sign In</button>
+            </form>
+            
+            <div class="auth-switch">
+                Don't have an account? <a href="#" onclick="switchToSignup()">Sign up here</a>
+            </div>
+        </div>
+        
+        <div id="signup-form" style="display: none;">
+            <h2 style="text-align: center; margin-bottom: 30px;">Create Account</h2>
+            
+            <form id="signupForm">
+                <div class="form-group">
+                    <label for="signup-firstName" class="form-label">First Name</label>
+                    <input type="text" id="signup-firstName" name="firstName" class="form-input" placeholder="Enter your first name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-lastName" class="form-label">Last Name</label>
+                    <input type="text" id="signup-lastName" name="lastName" class="form-input" placeholder="Enter your last name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-email" class="form-label">Email Address</label>
+                    <input type="email" id="signup-email" name="email" class="form-input" placeholder="Enter your email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="signup-password" class="form-label">Password</label>
+                    <input type="password" id="signup-password" name="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">Create Account</button>
+            </form>
+            
+            <div class="auth-switch">
+                Already have an account? <a href="#" onclick="switchToLogin()">Sign in here</a>
+            </div>
+        </div>
+        
+        <button onclick="demoLogin()" class="btn btn-secondary">Demo Login (Skip Authentication)</button>
+    </div>
+
+    <script>
+        function showMessage(message, type = 'error') {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = `<div class="${type}-message">${message}</div>`;
+        }
+        
+        function switchToSignup() {
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('signup-form').style.display = 'block';
+        }
+        
+        function switchToLogin() {
+            document.getElementById('signup-form').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+        }
+        
+        function demoLogin() {
+            // Simulate successful login
+            const userData = {
+                id: 'demo_user_123',
+                loginEmail: 'demo@lvastudio.com',
+                profile: {
+                    firstName: 'Demo',
+                    lastName: 'User'
+                }
+            };
+            
+            // Store demo user data
+            localStorage.setItem('wix_access_token', 'demo_token_' + Date.now());
+            localStorage.setItem('wix_user_data', JSON.stringify(userData));
+            
+            // Send success message to parent window
+            if (window.opener) {
+                window.opener.postMessage({
+                    type: 'AUTH_SUCCESS',
+                    user: userData
+                }, '*');
+                
+                // Close popup after a short delay
+                setTimeout(() => {
+                    window.close();
+                }, 1000);
+            }
+            
+            showMessage('Demo login successful! Redirecting...', 'success');
+        }
+        
+        // Handle form submissions
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showMessage('Authentication system is being set up. Please use Demo Login for now.', 'error');
+        });
+        
+        document.getElementById('signupForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            showMessage('Registration system is being set up. Please use Demo Login for now.', 'error');
+        });
+        
+        // Test server connection on load
+        window.addEventListener('load', async () => {
+            try {
+                const response = await fetch('/api/health');
+                if (response.ok) {
+                    console.log('✅ Server is running');
+                }
+            } catch (error) {
+                console.log('⚠️ Server connection test failed:', error.message);
+            }
+        });
+    </script>
+</body>
+</html> 
