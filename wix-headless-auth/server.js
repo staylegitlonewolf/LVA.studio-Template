@@ -156,6 +156,89 @@ app.get('/api/auth/profile/:userId', async (req, res) => {
   }
 });
 
+// Get Wix OAuth URL endpoint
+app.get('/api/auth/wix-oauth-url', async (req, res) => {
+  try {
+    const redirectUri = `${req.protocol}://${req.get('host')}/auth-callback`;
+    const authUrl = `https://www.wixapis.com/oauth2/authorize?clientId=a4452af2-5a36-41b8-80c3-446da4824e27&redirectUri=${encodeURIComponent(redirectUri)}&scope=offline_access&responseType=code&state=${Date.now()}`;
+    
+    res.json({ authUrl });
+  } catch (error) {
+    console.error('Error generating OAuth URL:', error);
+    res.status(500).json({ error: 'Failed to generate OAuth URL' });
+  }
+});
+
+// Handle OAuth callback and token exchange
+app.post('/api/auth/oauth-callback', async (req, res) => {
+  try {
+    const { code } = req.body;
+    
+    if (!code) {
+      return res.status(400).json({ error: 'Authorization code is required' });
+    }
+
+    // Exchange authorization code for access token
+    const tokenResponse = await fetch('https://www.wixapis.com/oauth2/access', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Authorization': 'IST.eyJraWQiOiJQb3pIX2FDMiIsImFsZyI6IlJTMjU2In0.eyJkYXRhIjoie1wiaWRcIjpcIjhhNzc0MjEyLTkzMzMtNGMyYS1iNmZlLWNhM2I5ZTQyMzNkZFwiLFwiaWRlbnRpdHlcIjp7XCJ0eXBlXCI6XCJhcHBsaWNhdGlvblwiLFwiaWRcIjpcIjgzYTExMzAwLTBkODAtNDYzZi04ZWYwLTE2NGU1ZmFlZGI3OFwifSxcInRlbmFudFwiOntcInR5cGVcIjpcImFjY291bnRcIixcImlkXCI6XCJiMmY3NGI5ZC0xNjk0LTRiNWItODdmMS1kNjhlMThkOGJkMjFcIn19IiwiaWF0IjoxNzUyOTAyODgyfQ.WFUFtf8vCy08V8m4BVEidOtwy_dFjWEoUdht9CTOK5KhqFQaEflyKP55oU-HhkWXjPv2JRW8RijXRGs6gs5JfYe2Y5JkG3s3hBue4OaUhQlFHgs44-f9NBq-WgIbeVQ2EyijFVZ1Ij_0FcsAqLHtIxEvDyoTnw4ZLHGhRFniFiq-lGXq4WO5rHEMQvcD_3m06_Q-cdWG3DRcabjBTSS6NPl8xCMKso5gAoNQrHJ5bBZgvkKGIc3xL_kzG2KynUI-kRy1yGL5PztebaGKLuoFdNy7nbSLm0Kh6Z3HjIDiuzynu4C7UZD5QC_jrPnEYDxk-rJ9g86dbVsd9IxEQjZ-RQ'
+      },
+      body: new URLSearchParams({
+        grant_type: 'authorization_code',
+        client_id: 'a4452af2-5a36-41b8-80c3-446da4824e27',
+        code: code,
+        redirect_uri: `${req.protocol}://${req.get('host')}/auth-callback`
+      })
+    });
+
+    if (!tokenResponse.ok) {
+      const errorText = await tokenResponse.text();
+      console.error('Token exchange failed:', errorText);
+      return res.status(400).json({ error: 'Token exchange failed' });
+    }
+
+    const tokenData = await tokenResponse.json();
+    
+    // Get user info using the access token
+    const userResponse = await fetch('https://www.wixapis.com/members/v1/members/current', {
+      headers: {
+        'Authorization': `Bearer ${tokenData.access_token}`,
+        'wix-site-id': '3cb2316f-a2b6-4ece-9af1-b457cb62671a'
+      }
+    });
+
+    if (!userResponse.ok) {
+      return res.status(400).json({ error: 'Failed to get user info' });
+    }
+
+    const userData = await userResponse.json();
+    
+    // Store tokens and user data
+    const user = {
+      id: userData.member.id,
+      loginEmail: userData.member.loginEmail,
+      profile: {
+        firstName: userData.member.profile?.firstName || 'User',
+        lastName: userData.member.profile?.lastName || 'Account'
+      },
+      accessToken: tokenData.access_token,
+      refreshToken: tokenData.refresh_token
+    };
+
+    res.json({ 
+      success: true, 
+      user,
+      message: 'OAuth authentication successful'
+    });
+    
+  } catch (error) {
+    console.error('OAuth callback error:', error);
+    res.status(500).json({ error: 'OAuth processing failed' });
+  }
+});
+
 // Update user profile endpoint
 app.put('/api/auth/profile/:userId', async (req, res) => {
   try {

@@ -270,7 +270,7 @@
         }
         
         // Handle OAuth callback if this page is opened as a callback
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const code = urlParams.get('code');
             const error = urlParams.get('error');
@@ -278,11 +278,49 @@
             if (code) {
                 // OAuth callback with code
                 showMessage('OAuth callback received. Processing...', 'success');
-                // For now, just do demo login
-                setTimeout(demoLogin, 1000);
+                
+                try {
+                    // Exchange code for tokens
+                    const response = await fetch('/api/auth/oauth-callback', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ code })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.success) {
+                            // Send success message to parent window
+                            if (window.opener) {
+                                window.opener.postMessage({
+                                    type: 'AUTH_SUCCESS',
+                                    user: data.user
+                                }, '*');
+                                
+                                // Close popup after a short delay
+                                setTimeout(() => {
+                                    window.close();
+                                }, 1000);
+                            }
+                        } else {
+                            showMessage('Authentication failed. Using demo login...', 'error');
+                            setTimeout(demoLogin, 2000);
+                        }
+                    } else {
+                        showMessage('Token exchange failed. Using demo login...', 'error');
+                        setTimeout(demoLogin, 2000);
+                    }
+                } catch (error) {
+                    console.error('OAuth callback error:', error);
+                    showMessage('OAuth processing failed. Using demo login...', 'error');
+                    setTimeout(demoLogin, 2000);
+                }
             } else if (error) {
                 // OAuth error
                 showMessage(`OAuth error: ${error}`, 'error');
+                setTimeout(demoLogin, 2000);
             }
         });
         

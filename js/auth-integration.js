@@ -67,7 +67,47 @@ class AuthIntegration {
     }
   }
 
-  openAuthPopup() {
+  async openAuthPopup() {
+    try {
+      // First, get the Wix OAuth URL from our backend
+      const response = await fetch(`${this.backendUrl}/api/auth/wix-oauth-url`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const authUrl = data.authUrl;
+        
+        const popupWidth = 500;
+        const popupHeight = 600;
+        const left = (window.screen.width - popupWidth) / 2;
+        const top = (window.screen.height - popupHeight) / 2;
+
+        this.authWindow = window.open(
+          authUrl,
+          'wix-auth',
+          `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=yes`
+        );
+
+        // Focus the popup
+        if (this.authWindow) {
+          this.authWindow.focus();
+        }
+      } else {
+        // Fallback to demo auth if OAuth setup fails
+        this.openDemoAuthPopup();
+      }
+    } catch (error) {
+      console.error('Error getting OAuth URL:', error);
+      // Fallback to demo auth
+      this.openDemoAuthPopup();
+    }
+  }
+
+  openDemoAuthPopup() {
     const popupWidth = 500;
     const popupHeight = 600;
     const left = (window.screen.width - popupWidth) / 2;
