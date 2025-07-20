@@ -3,9 +3,21 @@
 
 class AuthIntegration {
   constructor() {
-    // Use local development server for now
-    // Change this to your deployed backend URL when ready
-    this.backendUrl = 'http://localhost:3001';
+    // Check if we're on the deployed site or local development
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const isGitHubPages = window.location.hostname === 'staylegitlonewolf.github.io';
+    
+    if (isLocalhost) {
+      this.backendUrl = 'http://localhost:3001';
+    } else if (isGitHubPages) {
+      // For GitHub Pages, we need to use a deployed backend
+      // For now, use localhost for testing (you'll need to deploy the backend)
+      this.backendUrl = 'http://localhost:3001';
+      console.warn('⚠️ Using localhost backend. Deploy the backend for production use.');
+    } else {
+      this.backendUrl = 'https://your-backend-url.com';
+    }
+    
     this.authWindow = null;
     this.user = null;
     this.init();

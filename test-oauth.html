@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVA Studio - OAuth Test</title>
+    <style>
+        body {
+            font-family: 'Orbitron', monospace;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        h1 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        .test-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .status.success {
+            background: rgba(76, 175, 80, 0.3);
+            border: 1px solid #4CAF50;
+        }
+        
+        .status.error {
+            background: rgba(244, 67, 54, 0.3);
+            border: 1px solid #f44336;
+        }
+        
+        .status.info {
+            background: rgba(33, 150, 243, 0.3);
+            border: 1px solid #2196F3;
+        }
+        
+        .oauth-url {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            word-break: break-all;
+            font-size: 0.9em;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LVA.studio™</h1>
+        <div class="subtitle">OAuth Test Page</div>
+        
+        <button class="test-button" onclick="testOAuthURL()">Test OAuth URL</button>
+        <button class="test-button" onclick="openOAuthPopup()">Open OAuth Popup</button>
+        <button class="test-button" onclick="testBackendHealth()">Test Backend Health</button>
+        
+        <div id="status"></div>
+        <div id="oauth-url" class="oauth-url" style="display: none;"></div>
+    </div>
+
+    <script>
+        const backendUrl = 'http://localhost:3001';
+        let authWindow = null;
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            statusDiv.className = `status ${type}`;
+            statusDiv.textContent = message;
+        }
+
+        function showOAuthURL(url) {
+            const urlDiv = document.getElementById('oauth-url');
+            urlDiv.textContent = url;
+            urlDiv.style.display = 'block';
+        }
+
+        async function testBackendHealth() {
+            try {
+                showStatus('Testing backend health...', 'info');
+                
+                const response = await fetch(`${backendUrl}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus(`✅ Backend is healthy! ${data.message}`, 'success');
+                } else {
+                    showStatus(`❌ Backend error: ${data.error || 'Unknown error'}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Backend connection failed: ${error.message}`, 'error');
+            }
+        }
+
+        async function testOAuthURL() {
+            try {
+                showStatus('Getting OAuth URL...', 'info');
+                
+                const response = await fetch(`${backendUrl}/api/auth/wix-oauth-url`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('✅ OAuth URL generated successfully!', 'success');
+                    showOAuthURL(data.authUrl);
+                } else {
+                    showStatus(`❌ Failed to get OAuth URL: ${data.error}`, 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error getting OAuth URL: ${error.message}`, 'error');
+            }
+        }
+
+        async function openOAuthPopup() {
+            try {
+                showStatus('Opening OAuth popup...', 'info');
+                
+                // Get OAuth URL
+                const response = await fetch(`${backendUrl}/api/auth/wix-oauth-url`);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Failed to get OAuth URL');
+                }
+                
+                // Open popup
+                const popupWidth = 500;
+                const popupHeight = 600;
+                const left = (window.screen.width - popupWidth) / 2;
+                const top = (window.screen.height - popupHeight) / 2;
+
+                authWindow = window.open(
+                    data.authUrl,
+                    'wix-auth',
+                    `width=${popupWidth},height=${popupHeight},left=${left},top=${top},scrollbars=yes,resizable=yes`
+                );
+
+                if (authWindow) {
+                    authWindow.focus();
+                    showStatus('✅ OAuth popup opened! Check the popup window.', 'success');
+                } else {
+                    showStatus('❌ Popup blocked by browser. Please allow popups.', 'error');
+                }
+            } catch (error) {
+                showStatus(`❌ Error opening OAuth popup: ${error.message}`, 'error');
+            }
+        }
+
+        // Listen for messages from popup
+        window.addEventListener('message', (event) => {
+            if (event.origin !== backendUrl) return;
+            
+            if (event.data.type === 'AUTH_SUCCESS') {
+                showStatus('✅ Authentication successful!', 'success');
+                if (authWindow && !authWindow.closed) {
+                    authWindow.close();
+                }
+            } else if (event.data.type === 'AUTH_ERROR') {
+                showStatus(`❌ Authentication failed: ${event.data.error}`, 'error');
+                if (authWindow && !authWindow.closed) {
+                    authWindow.close();
+                }
+            }
+        });
+
+        // Test backend health on page load
+        window.addEventListener('load', testBackendHealth);
+    </script>
+</body>
+</html> 
