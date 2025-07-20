@@ -271,9 +271,16 @@
         
         // Handle OAuth callback if this page is opened as a callback
         window.addEventListener('load', async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            const error = urlParams.get('error');
+            // Check for code in both query string and fragment
+            let code = new URLSearchParams(window.location.search).get('code');
+            let error = new URLSearchParams(window.location.search).get('error');
+            
+            // If not in query string, check fragment
+            if (!code && !error && window.location.hash) {
+                const fragmentParams = new URLSearchParams(window.location.hash.substring(1));
+                code = fragmentParams.get('code');
+                error = fragmentParams.get('error');
+            }
             
             if (code) {
                 // OAuth callback with code
