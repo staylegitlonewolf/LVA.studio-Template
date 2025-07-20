@@ -48,39 +48,41 @@ class AuthService {
       
       // Create the Main collection with required fields
       const collectionData = {
-        displayName: 'Main',
-        fields: [
-          {
-            key: 'title',
-            displayName: 'Title',
-            type: 'TEXT',
-            required: true
-          },
-          {
-            key: 'description',
-            displayName: 'Description',
-            type: 'TEXT'
-          },
-          {
-            key: 'owner',
-            displayName: 'Owner',
-            type: 'REFERENCE',
-            reference: {
-              collectionId: 'Members',
-              displayName: 'Owner'
+        collection: {
+          displayName: 'Main',
+          fields: [
+            {
+              key: 'title',
+              displayName: 'Title',
+              type: 'TEXT',
+              required: true
+            },
+            {
+              key: 'description',
+              displayName: 'Description',
+              type: 'TEXT'
+            },
+            {
+              key: 'owner',
+              displayName: 'Owner',
+              type: 'REFERENCE',
+              reference: {
+                collectionId: 'Members',
+                displayName: 'Owner'
+              }
+            },
+            {
+              key: 'createdDate',
+              displayName: 'Created Date',
+              type: 'DATE'
+            },
+            {
+              key: 'updatedDate',
+              displayName: 'Updated Date',
+              type: 'DATE'
             }
-          },
-          {
-            key: 'createdDate',
-            displayName: 'Created Date',
-            type: 'DATE'
-          },
-          {
-            key: 'updatedDate',
-            displayName: 'Updated Date',
-            type: 'DATE'
-          }
-        ]
+          ]
+        }
       };
 
       try {
