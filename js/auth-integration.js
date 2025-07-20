@@ -3,8 +3,9 @@
 
 class AuthIntegration {
   constructor() {
-    // Use the Wix Headless Auth backend URL
-    this.backendUrl = 'https://staylegit.wixstudio.com/lvastudiot1';
+    // Use local development server for now
+    // Change this to your deployed backend URL when ready
+    this.backendUrl = 'http://localhost:3001';
     this.authWindow = null;
     this.user = null;
     this.init();

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Server Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Server Test</h1>
+    
+    <div id="status" class="status info">Testing server connection...</div>
+    
+    <button onclick="testServer()">Test Server</button>
+    <button onclick="testAuth()">Test Auth Page</button>
+    
+    <script>
+        async function testServer() {
+            const status = document.getElementById('status');
+            status.textContent = 'Testing server...';
+            status.className = 'status info';
+            
+            try {
+                const response = await fetch('http://localhost:3001/api/health');
+                const data = await response.json();
+                
+                if (response.ok) {
+                    status.textContent = `✅ Server is running! Status: ${data.status}`;
+                    status.className = 'status success';
+                } else {
+                    status.textContent = `❌ Server error: ${data.error || response.statusText}`;
+                    status.className = 'status error';
+                }
+            } catch (error) {
+                status.textContent = `❌ Connection failed: ${error.message}`;
+                status.className = 'status error';
+            }
+        }
+        
+        function testAuth() {
+            window.open('http://localhost:3001', '_blank');
+        }
+        
+        // Test on load
+        window.addEventListener('load', testServer);
+    </script>
+</body>
+</html> 
