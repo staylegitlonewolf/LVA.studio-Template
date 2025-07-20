@@ -1,14 +1,21 @@
-import { startQuotes, initLoading, enterPortal } from './portal.js';
-import { generateCard, attachCardEvents } from './cards.js';
-import { loadShopContent, restorePortalContent } from './shop.js';
-import { toggleFontMode, setupThemeAndLogo } from './theme.js';
+// Remove ES6 imports and use global functions from other script files
+// These functions are already available from the script tags in index.html
 
-startQuotes();
-initLoading();
-setupThemeAndLogo(restorePortalContent, attachCardEvents);
+// Initialize the application
+if (typeof startQuotes !== 'undefined') startQuotes();
+if (typeof initLoading !== 'undefined') initLoading();
+if (typeof setupThemeAndLogo !== 'undefined') setupThemeAndLogo(restorePortalContent, attachCardEvents);
 
 // Expose for HTML onclicks
-window.enterPortal = () => enterPortal(generateCard, attachCardEvents);
-window.loadShopContent = () => loadShopContent();
-window.restorePortalContent = () => restorePortalContent(attachCardEvents);
-window.toggleFontMode = toggleFontMode; 
+window.enterPortal = () => {
+  if (typeof enterPortal !== 'undefined') enterPortal(generateCard, attachCardEvents);
+};
+window.loadShopContent = () => {
+  if (typeof loadShopContent !== 'undefined') loadShopContent();
+};
+window.restorePortalContent = () => {
+  if (typeof restorePortalContent !== 'undefined') restorePortalContent(attachCardEvents);
+};
+window.toggleFontMode = (element) => {
+  if (typeof toggleFontMode !== 'undefined') toggleFontMode(element);
+}; 

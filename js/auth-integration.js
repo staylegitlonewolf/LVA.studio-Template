@@ -114,6 +114,14 @@ class AuthIntegration {
       }
     } catch (error) {
       console.error('Error getting OAuth URL:', error);
+      
+      // Check if backend is not running
+      if (error.message.includes('Failed to fetch') || error.message.includes('ERR_BLOCKED_BY_CLIENT')) {
+        this.showNotification('Backend server not running. Please start the backend server first.', 'error');
+        console.log('💡 To start the backend server, run: cd wix-headless-auth && npm start');
+        return;
+      }
+      
       // Fallback to demo auth
       this.openDemoAuthPopup();
     }
