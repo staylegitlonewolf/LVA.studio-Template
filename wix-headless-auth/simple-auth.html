@@ -269,6 +269,23 @@
             showMessage('Demo login successful! Redirecting...', 'success');
         }
         
+        // Handle OAuth callback if this page is opened as a callback
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
+            const error = urlParams.get('error');
+            
+            if (code) {
+                // OAuth callback with code
+                showMessage('OAuth callback received. Processing...', 'success');
+                // For now, just do demo login
+                setTimeout(demoLogin, 1000);
+            } else if (error) {
+                // OAuth error
+                showMessage(`OAuth error: ${error}`, 'error');
+            }
+        });
+        
         // Handle form submissions
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();

@@ -184,6 +184,11 @@ app.get('/auth', (req, res) => {
   res.sendFile('simple-auth.html', { root: '.' });
 });
 
+// Handle OAuth callback
+app.get('/auth-callback', (req, res) => {
+  res.sendFile('simple-auth.html', { root: '.' });
+});
+
 // Catch-all handler for React routing
 app.get('*', (req, res) => {
   res.sendFile('dist/index.html', { root: '.' });
